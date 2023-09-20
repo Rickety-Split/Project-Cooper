@@ -59,3 +59,21 @@ app.get('/api/users/:id', (req, res) => {
 app.listen(8081, () => {
   console.log('Server is listening on port 8081');
 });
+
+
+// Added route for creating users
+
+// Define a route to create a new user
+app.post('/api/users', (req, res) => {
+    const { username, password, email, fullName } = req.body; // Assuming you're sending these fields in the request body
+    const query = 'INSERT INTO Users (Username, Password, Email, FullName) VALUES (?, ?, ?, ?)';
+    db.query(query, [username, password, email, fullName], (err, results) => {
+      if (err) {
+        console.error('Error creating user:', err);
+        res.status(500).json({ error: 'Unable to create user' });
+      } else {
+        res.json({ message: 'User created successfully' });
+      }
+    });
+  });
+  
