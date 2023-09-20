@@ -1,9 +1,11 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const bcrypt = require('bcrypt'); // Import the bcrypt library
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // Enable JSON body parsing
 
 // Create a MySQL database connection
 const db = mysql.createConnection({
@@ -55,25 +57,39 @@ app.get('/api/users/:id', (req, res) => {
 
 // Other CRUD routes for creating, updating, and deleting users can be added here
 
-// Start the server
-app.listen(8081, () => {
-  console.log('Server is listening on port 8081');
-});
-
 
 // Added route for creating users
 
 // Define a route to create a new user
-app.post('/api/users', (req, res) => {
-    const { username, password, email, fullName } = req.body; // Assuming you're sending these fields in the request body
-    const query = 'INSERT INTO Users (Username, Password, Email, FullName) VALUES (?, ?, ?, ?)';
-    db.query(query, [username, password, email, fullName], (err, results) => {
-      if (err) {
-        console.error('Error creating user:', err);
-        res.status(500).json({ error: 'Unable to create user' });
-      } else {
-        res.json({ message: 'User created successfully' });
-      }
-    });
+app.post('/api/users', async (req, res) => {
+    const { username, password, email, fullName } = req.body;
+  
+    try {
+      // Hash the password before storing it in the database
+      const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds: 10
+  
+      // Define the SQL query to insert data into the Users table
+      const query = 'INSERT INTO Users (Username, Password, Email, FullName, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, NOW(), NOW())';
+      const values = [username, hashedPassword, email, fullName];
+  
+      db.query(query, values, (err, results) => {
+        if (err) {
+          console.error('Error creating user:', err);
+          res.status(500).json({ error: 'Unable to create user' });
+        } else {
+          res.json({ message: 'User created successfully' });
+        }
+      });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      res.status(500).json({ error: 'Unable to create user' });
+    }
+  });
+  
+  // Other CRUD routes for fetching, updating, and deleting users can be added here
+  
+  // Start the server
+  app.listen(8081, () => {
+    console.log('Server is listening on port 8081');
   });
   

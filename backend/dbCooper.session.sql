@@ -81,3 +81,10 @@ CREATE TABLE RolePermissions (
     FOREIGN KEY (RoleID) REFERENCES Roles(ID),
     FOREIGN KEY (PermissionID) REFERENCES Permissions(ID)
 );
+
+--@block
+SELECT USER();
+SELECT CURRENT_USER();
+
+--@block
+SELECT DATABASE();
