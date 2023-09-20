@@ -51,3 +51,36 @@ function UpdateUserForm() {
                         onChange={(e) => setUserData({ ...userData, username: e.target.value })}
                     />
                 </div>
+                <div>
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={userData.email}
+                        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                    />
+                </div>
+                <div>
+                    <label>Full Name:</label>
+                    <input
+                        type="text"
+                        name="fullName"
+                        value={userData.fullName}
+                        onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
+                    />
+                </div>
+                {/* You can include the password update here if needed */}
+                { <div>
+                    <label>Password:</label>
+                    <input
+                        type="password"
+                        name="password"
+                        value={userData.password}
+                        onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+                    />
+                </div> }
+                <button type="submit">Update User</button>
+            </form>
+        </div>
+    );
+                }
