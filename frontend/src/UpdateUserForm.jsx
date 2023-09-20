@@ -84,3 +84,5 @@ function UpdateUserForm() {
         </div>
     );
                 }
+
+export default UpdateUserForm;
