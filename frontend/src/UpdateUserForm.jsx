@@ -13,8 +13,8 @@ function UpdateUserForm() {
     const [userId, setUserId] = useState(); // Set the user ID for updating
 
     useEffect(() => {
-        // Fetch user details for updating
-        if (userId) {
+ 
+    if (userId) {
             axios.get(`/api/users/${userId}`)
                 .then((response) => {
                     setUserData(response.data);
