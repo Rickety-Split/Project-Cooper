@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Us
 import UserList from '../../frontend/src/UserList';
 import CreateUserForm from '../../frontend/src/CreateUserForm';
 import UpdateUserForm from '../../frontend/src/UpdateUserForm';
+import DeleteUser from '../../frontend/src/DeleteUser'; 
 
 function AppRoutes() {
     return (
@@ -13,6 +14,7 @@ function AppRoutes() {
                 <Route path="/" element={<UserList />} /> {/* Use Route for child routes */}
                 <Route path="create" element={<CreateUserForm />} />
                 <Route path="update/:id" element={<UpdateUserForm />} />
+                <Route path="delete" element={<DeleteUser />} />
                 {/* Add more routes for other components as needed */}
             </Routes>
         </Router>

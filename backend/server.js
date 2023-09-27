@@ -24,6 +24,32 @@ db.connect((err) => {
   }
 });
 
+//Define a route to create a new user
+app.post('/api/users', async (req, res) => {
+    const { username, password, email, fullName } = req.body;
+
+    try {
+      // Hash the password before storing it in the database
+      const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds: 10
+
+      // Define the SQL query to insert data into the Users table
+      const query = 'INSERT INTO Users (Username, Password, Email, FullName, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, NOW(), NOW())';
+      const values = [username, hashedPassword, email, fullName];
+
+      db.query(query, values, (err, results) => {
+        if (err) {
+          console.error('Error creating user:', err);
+          res.status(500).json({ error: 'Unable to create user' });
+        } else {
+          res.json({ message: 'User created successfully' });
+        }
+      });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      res.status(500).json({ error: 'Unable to create user' });
+    }
+  });
+
 // Define a route to fetch all users
 app.get('/api/users', (req, res) => {
   const query = 'SELECT * FROM Users';
@@ -89,7 +115,26 @@ app.put('/api/users/:id', async (req, res) => {
   }
 });
 
+// Define a route to delete a user by ID
+app.delete('/api/users/:id', (req, res) => {
+  const userId = req.params.id;
 
+  // Define the SQL query to delete the user from the Users table
+  const deleteUserQuery = 'DELETE FROM Users WHERE ID = ?';
+
+  db.query(deleteUserQuery, [userId], (err, results) => {
+    if (err) {
+      console.error('Error deleting user:', err);
+      res.status(500).json({ error: 'Unable to delete user' });
+    } else {
+      if (results.affectedRows === 0) {
+        res.status(404).json({ error: 'User not found' });
+      } else {
+        res.json({ message: 'User deleted successfully' });
+      }
+    }
+  });
+});
 
   // Start the server
   app.listen(8081, () => {
