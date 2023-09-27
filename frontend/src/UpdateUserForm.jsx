@@ -1,8 +1,7 @@
-// src/components/UpdateUserForm.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function UpdateUserForm() {
+function UpdateUserForm({ userId }) {
     const [userData, setUserData] = useState({
         username: '',
         password: '',
@@ -10,14 +9,13 @@ function UpdateUserForm() {
         fullName: '',
     });
 
-    const [userId, setUserId] = useState(); // Set the user ID for updating
-
     useEffect(() => {
- 
-    if (userId) {
+        if (userId) {
             axios.get(`/api/users/${userId}`)
                 .then((response) => {
-                    setUserData(response.data);
+                    if (response.data) {
+                        setUserData(response.data);
+                    }
                 })
                 .catch((error) => {
                     console.error('Error fetching user details:', error);
@@ -27,28 +25,39 @@ function UpdateUserForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!userId) {
+            console.error('User ID is undefined.');
+            return;
+        }
         try {
-            // Send a PUT request to update the user
             const response = await axios.put(`/api/users/${userId}`, userData);
             console.log('User updated:', response.data);
-            // Optionally, reset the form or redirect to a different page
         } catch (error) {
             console.error('Error updating user:', error);
+            console.log('Error response:', error.response); // Log the response for more details
         }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setUserData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
     };
 
     return (
         <div>
             <h2>Update User</h2>
             <form onSubmit={handleSubmit}>
-                {/* Input fields for updating user data */}
                 <div>
+                    {/* Input fields for updating user data */}
                     <label>Username:</label>
                     <input
                         type="text"
                         name="username"
                         value={userData.username}
-                        onChange={(e) => setUserData({ ...userData, username: e.target.value })}
+                        onChange={handleInputChange}
                     />
                 </div>
                 <div>
@@ -57,7 +66,7 @@ function UpdateUserForm() {
                         type="email"
                         name="email"
                         value={userData.email}
-                        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                        onChange={handleInputChange}
                     />
                 </div>
                 <div>
@@ -66,23 +75,23 @@ function UpdateUserForm() {
                         type="text"
                         name="fullName"
                         value={userData.fullName}
-                        onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
+                        onChange={handleInputChange}
                     />
                 </div>
                 {/* You can include the password update here if needed */}
-                { <div>
+                <div>
                     <label>Password:</label>
                     <input
                         type="password"
                         name="password"
                         value={userData.password}
-                        onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+                        onChange={handleInputChange}
                     />
-                </div> }
+                </div>
                 <button type="submit">Update User</button>
             </form>
         </div>
     );
-                }
+}
 
 export default UpdateUserForm;

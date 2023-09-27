@@ -1,12 +1,12 @@
-// src/components/UserList.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import UpdateUserForm from './UpdateUserForm';
 
 function UserList() {
     const [users, setUsers] = useState([]);
+    const [selectedUserId, setSelectedUserId] = useState(null);
 
     useEffect(() => {
-        // Fetch users from the API
         axios.get('/api/users')
             .then((response) => {
                 setUsers(response.data);
@@ -16,6 +16,10 @@ function UserList() {
             });
     }, []);
 
+    const handleUserSelect = (userId) => {
+        setSelectedUserId(userId);
+    };
+
     return (
         <div>
             <h2>User List</h2>
@@ -23,9 +27,11 @@ function UserList() {
                 {users.map((user) => (
                     <li key={user.ID}>
                         Username: {user.Username}, Email: {user.Email}, Full Name: {user.FullName}
+                        <button onClick={() => handleUserSelect(user.ID)}>Select User</button>
                     </li>
                 ))}
             </ul>
+            {selectedUserId && <UpdateUserForm userId={selectedUserId} />}
         </div>
     );
 }
