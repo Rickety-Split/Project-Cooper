@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
 
 const Login = () => {
+  const navigate = useNavigate(); // Use useNavigate hook for navigation
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,8 +20,9 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Successful login, you may redirect to the dashboard here
+        // Successful login, navigate to the dashboard
         console.log(data.message);
+        navigate('/dashboard'); // Use navigate to redirect
       } else {
         setError(data.error);
       }
