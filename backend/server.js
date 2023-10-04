@@ -4,6 +4,13 @@ const cors = require('cors');
 const bcrypt = require('bcrypt'); // Import the bcrypt library
 const bodyParser = require('body-parser');
 
+//Imports for token authentication
+const jwt = require('jsonwebtoken'); // Import the jsonwebtoken library
+
+// Secret key for signing JWTs (replace this with a secure key in a real-world scenario)
+const JWT_SECRET_KEY = 'your-secret-key';
+
+
 const PORT = process.env.PORT || 8081;
 
 const app = express();
@@ -140,7 +147,7 @@ app.delete('/api/users/:id', (req, res) => {
 });
 
 
-// Login API
+// Login
 
 // Middleware to parse incoming JSON data
 app.use(bodyParser.json());
@@ -184,7 +191,7 @@ async function authenticateUser(username, password) {
 }
 
 
-// Login route
+// Login route with token authentication
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -197,14 +204,16 @@ app.post('/login', (req, res) => {
     if (checkApiGateway()) {
       // Authenticate user
       if (authenticateUser(sanitizedUsername, sanitizedPassword)) {
-        // Redirect to dashboard page
-        res.json({ message: 'Login successful. Redirecting to dashboard.' });
-
-        // Create user session token (in a real-world scenario, you would generate and send a token)
-        const userSessionToken = 'sampleToken';
+        // Create user session token (JWT)
+        const userSessionToken = jwt.sign({ username: sanitizedUsername }, JWT_SECRET_KEY, {
+          expiresIn: '1h', // Token expires in 1 hour (adjust as needed)
+        });
 
         // Save to audit table
         auditTable.push({ username: sanitizedUsername, action: 'login' });
+
+        // Respond with the token
+        res.json({ token: userSessionToken });
       } else {
         res.status(401).json({ error: 'Invalid username/password.' });
       }
@@ -216,6 +225,26 @@ app.post('/login', (req, res) => {
   }
 });
 
+// ... (existing code)
+
+// Middleware to authenticate requests using the token
+function authenticateToken(req, res, next) {
+  const token = req.header('Authorization');
+
+  if (!token) return res.status(401).json({ error: 'Unauthorized. Token not provided.' });
+
+  jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Unauthorized. Invalid token.' });
+
+    req.user = user;
+    next();
+  });
+}
+
+// Example of using the authenticateToken middleware in a protected route
+app.get('/protected-resource', authenticateToken, (req, res) => {
+  res.json({ message: 'This is a protected resource.' });
+});
 
   // Start the server
   app.listen(8081, () => {

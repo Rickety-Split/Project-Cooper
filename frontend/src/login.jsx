@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const navigate = useNavigate(); // Use useNavigate hook for navigation
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://localhost:8081/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -20,11 +20,17 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Successful login, navigate to the dashboard
-        console.log(data.message);
-        navigate('/dashboard'); // Use navigate to redirect
+        // Check if the response contains a token
+        if (data.token) {
+          // Successful login, navigate to the dashboard
+          console.log('Login successful. Redirecting to dashboard.');
+          navigate('/dashboard');
+        } else {
+          console.error('Token missing in the response:', data);
+          setError('An unexpected error occurred.');
+        }
       } else {
-        setError(data.error);
+        setError(data.error || 'An unexpected error occurred.');
       }
     } catch (error) {
       console.error('Error during login:', error);
