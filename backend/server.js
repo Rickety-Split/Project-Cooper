@@ -2,6 +2,9 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const bcrypt = require('bcrypt'); // Import the bcrypt library
+const bodyParser = require('body-parser');
+
+const PORT = process.env.PORT || 8081;
 
 const app = express();
 app.use(cors());
@@ -135,6 +138,84 @@ app.delete('/api/users/:id', (req, res) => {
     }
   });
 });
+
+
+// Login API
+
+// Middleware to parse incoming JSON data
+app.use(bodyParser.json());
+
+// Simulating user data and audit table
+const users = [
+  { username: 'testuser', password: 'testpassword' },
+  // Add more user data as needed
+];
+
+const auditTable = [];
+
+// Function to sanitize input
+function sanitize(input) {
+  // Implement your sanitation logic here
+  return input.trim(); // Example: Removing leading and trailing whitespaces
+}
+
+// Function to check API gateway status
+function checkApiGateway() {
+  // Simulated API gateway status
+  return true;
+}
+
+// Function to authenticate user
+async function authenticateUser(username, password) {
+  const query = 'SELECT * FROM Users WHERE Username = ?';
+  const [dbUser] = await new Promise((resolve, reject) => {
+    db.query(query, [username], (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+
+  if (dbUser && dbUser.length > 0) {
+    const hashedPassword = dbUser[0].Password;
+    return await bcrypt.compare(password, hashedPassword);
+  }
+
+  return false;
+}
+
+
+// Login route
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Sanitize input
+  const sanitizedUsername = sanitize(username);
+  const sanitizedPassword = sanitize(password);
+
+  if (sanitizedUsername && sanitizedPassword) {
+    // Check API gateway status
+    if (checkApiGateway()) {
+      // Authenticate user
+      if (authenticateUser(sanitizedUsername, sanitizedPassword)) {
+        // Redirect to dashboard page
+        res.json({ message: 'Login successful. Redirecting to dashboard.' });
+
+        // Create user session token (in a real-world scenario, you would generate and send a token)
+        const userSessionToken = 'sampleToken';
+
+        // Save to audit table
+        auditTable.push({ username: sanitizedUsername, action: 'login' });
+      } else {
+        res.status(401).json({ error: 'Invalid username/password.' });
+      }
+    } else {
+      res.status(500).json({ error: 'Server not active.' });
+    }
+  } else {
+    res.status(400).json({ error: 'Invalid input. Username/password cannot be blank.' });
+  }
+});
+
 
   // Start the server
   app.listen(8081, () => {

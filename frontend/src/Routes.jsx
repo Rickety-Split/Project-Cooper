@@ -5,6 +5,7 @@ import UserList from '../../frontend/src/UserList';
 import CreateUserForm from '../../frontend/src/CreateUserForm';
 import UpdateUserFromList from './UpdateUserFromList';
 import DeleteUser from '../../frontend/src/DeleteUser'; 
+import Login from './login'; 
 
 function AppRoutes() {
     return (
@@ -15,7 +16,7 @@ function AppRoutes() {
                 <Route path="create" element={<CreateUserForm />} />
                 <Route path="update/:id" element={<UpdateUserFromList/>} />
                 <Route path="delete" element={<DeleteUser />} />
-                {/* Add more routes for other components as needed */}
+                <Route path="login" element={<Login />} />
             </Routes>
         </Router>
     );
