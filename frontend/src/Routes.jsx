@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Use Routes instead of Route
 import UserList from '../../frontend/src/UserList';
 import CreateUserForm from '../../frontend/src/CreateUserForm';
-import UpdateUserForm from '../../frontend/src/UpdateUserForm';
+import UpdateUserFromList from './UpdateUserFromList';
 import DeleteUser from '../../frontend/src/DeleteUser'; 
 
 function AppRoutes() {
@@ -11,9 +11,9 @@ function AppRoutes() {
         <Router>
             <Routes> {/* Use Routes for the parent */}
                 {/* Define routes for different views */}
-                <Route path="/" element={<UserList />} /> {/* Use Route for child routes */}
+                <Route path="UserList" element={<UserList />} /> {/* Use Route for child routes */}
                 <Route path="create" element={<CreateUserForm />} />
-                <Route path="update/:id" element={<UpdateUserForm />} />
+                <Route path="update/:id" element={<UpdateUserFromList/>} />
                 <Route path="delete" element={<DeleteUser />} />
                 {/* Add more routes for other components as needed */}
             </Routes>

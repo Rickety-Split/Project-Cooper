@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import UpdateUserForm from './UpdateUserForm';
+import UpdateUserFromList from './UpdateUserFromList';
 
 function UserList() {
     const [users, setUsers] = useState([]);
@@ -31,7 +31,7 @@ function UserList() {
                     </li>
                 ))}
             </ul>
-            {selectedUserId && <UpdateUserForm userId={selectedUserId} />}
+            {selectedUserId && <UpdateUserFromList userId={selectedUserId} />}
         </div>
     );
 }

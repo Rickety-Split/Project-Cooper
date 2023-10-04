@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function UpdateUserForm({ userId }) {
+function UpdateUserFromList({ userId }) {
     const [userData, setUserData] = useState({
         username: '',
         password: '',
         email: '',
         fullName: '',
     });
+
+    const [updateSuccess, setUpdateSuccess] = useState(false);
 
     useEffect(() => {
         if (userId) {
@@ -32,6 +34,7 @@ function UpdateUserForm({ userId }) {
         try {
             const response = await axios.put(`/api/users/${userId}`, userData);
             console.log('User updated:', response.data);
+            setUpdateSuccess(true); // Set the success state to true
         } catch (error) {
             console.error('Error updating user:', error);
             console.log('Error response:', error.response); // Log the response for more details
@@ -44,11 +47,14 @@ function UpdateUserForm({ userId }) {
             ...prevData,
             [name]: value,
         }));
+        // Reset the success state when input changes
+        setUpdateSuccess(false);
     };
 
     return (
         <div>
             <h2>Update User</h2>
+            {updateSuccess && <p>User updated successfully!</p>}
             <form onSubmit={handleSubmit}>
                 <div>
                     {/* Input fields for updating user data */}
@@ -94,4 +100,4 @@ function UpdateUserForm({ userId }) {
     );
 }
 
-export default UpdateUserForm;
+export default UpdateUserFromList;
